@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { CollectionCard } from "./CollectionCard";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
 import type { Collection } from "@/lib/mono/types";
 
 export function CollectionsList({ refreshKey }: { refreshKey: number }) {
@@ -29,8 +31,8 @@ export function CollectionsList({ refreshKey }: { refreshKey: number }) {
   }, [load, refreshKey]);
 
   if (isLoading) return <p className="text-sm text-ink/60">Cargando recaudos...</p>;
-  if (error) return <p className="text-sm text-danger">{error}</p>;
-  if (collections.length === 0) return <p className="text-sm text-ink/60">Aún no hay recaudos.</p>;
+  if (error) return <ErrorState message={error} />;
+  if (collections.length === 0) return <EmptyState message="Aún no hay recaudos." />;
 
   return (
     <div className="flex flex-col gap-3">

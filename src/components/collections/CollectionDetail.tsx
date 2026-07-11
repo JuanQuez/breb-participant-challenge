@@ -5,6 +5,7 @@ import { usePolling } from "@/hooks/usePolling";
 import { Card } from "@/components/ui/Card";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Spinner } from "@/components/ui/Spinner";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { collectionStatusTone } from "@/lib/mono/status";
 import { formatMoney } from "@/lib/format";
 import type { Collection } from "@/lib/mono/types";
@@ -32,7 +33,7 @@ export function CollectionDetail({ id }: { id: string }) {
         ← Volver a recaudos
       </Link>
 
-      {error && <p className="text-sm text-danger">{error.message}</p>}
+      {error && <ErrorState message={error.message} />}
 
       {data && (
         <Card className="flex flex-col gap-4">
