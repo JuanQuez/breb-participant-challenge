@@ -4,10 +4,9 @@ export default function HomePage() {
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-16">
       <div>
-        <h1 className="text-3xl font-semibold text-ink">Bre-B Participant Challenge</h1>
+        <h1 className="text-3xl font-semibold text-ink">Bre-B With Mono</h1>
         <p className="mt-2 text-ink/60">
-          Integración de recaudos y transferencias salientes contra el sandbox de Bre-B
-          Participant.
+          Integración de recaudos y transferencias.
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
