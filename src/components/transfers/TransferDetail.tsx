@@ -60,7 +60,7 @@ export function TransferDetail({ id }: { id: string }) {
             </div>
             {data.payer_name && (
               <div>
-                <dt className="text-ink/50">Beneficiario</dt>
+                <dt className="text-ink/50">Pagador</dt>
                 <dd className="text-ink">{data.payer_name}</dd>
               </div>
             )}

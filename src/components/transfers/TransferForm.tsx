@@ -25,8 +25,14 @@ export function TransferForm({ onCreated }: { onCreated: () => void }) {
       if (!resolveResponse.ok) {
         throw new Error(resolved.message ?? "No se pudo resolver la llave destino");
       }
-      if (resolved.state !== "resolved" || !resolved.target) {
+      if (resolved.state === "failed") {
         throw new Error(resolved.state_reason ?? "La llave no pudo resolverse");
+      }
+      if (resolved.state !== "resolved" || !resolved.target) {
+        // Resolution can be asynchronous ("created"/"retrying" are not terminal states).
+        // There is no endpoint yet to poll this specific resolution to completion, so
+        // surface a clear "still pending" message instead of a false failure.
+        throw new Error("La resolución de la llave está en proceso, intenta de nuevo en unos segundos");
       }
 
       const transferResponse = await fetch("/api/transfers", {
@@ -37,6 +43,13 @@ export function TransferForm({ onCreated }: { onCreated: () => void }) {
       const transferBody = await transferResponse.json();
       if (!transferResponse.ok) {
         throw new Error(transferBody.message ?? "No se pudo crear la transferencia");
+      }
+
+      if (transferBody.rejected_transfers?.length > 0) {
+        const rejected = transferBody.rejected_transfers[0] ?? {};
+        throw new Error(
+          rejected.message ?? rejected.error_code ?? "La transferencia fue rechazada",
+        );
       }
 
       setExternalId("");

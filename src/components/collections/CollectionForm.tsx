@@ -27,9 +27,16 @@ export function CollectionForm({ onCreated }: { onCreated: () => void }) {
         }),
       });
 
+      const body = await response.json();
+
       if (!response.ok) {
-        const body = await response.json();
         throw new Error(body.message ?? "No se pudo crear el recaudo");
+      }
+
+      if (body.rejected?.length > 0) {
+        throw new Error(
+          body.rejected[0].message ?? body.rejected[0].error_code ?? "El recaudo fue rechazado",
+        );
       }
 
       setExternalId("");
