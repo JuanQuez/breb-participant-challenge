@@ -1,15 +1,25 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function HomePage() {
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-16">
-      <div>
-        <h1 className="text-3xl font-semibold text-ink">Bre-B Participant Challenge</h1>
-        <p className="mt-2 text-ink/60">
-          Integración de recaudos y transferencias salientes contra el sandbox de Bre-B
-          Participant.
-        </p>
-      </div>
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-surface via-surface to-surface2 px-6 py-12 sm:px-10 sm:py-16">
+        <Image
+          src="/svg/favicon.svg"
+          alt=""
+          width={420}
+          height={420}
+          aria-hidden
+          className="pointer-events-none absolute -right-16 -top-20 opacity-[0.07] sm:-right-8 sm:-top-24"
+        />
+        <div className="relative">
+          <h1 className="text-3xl font-semibold tracking-tight text-ink">Bre-B With Mono</h1>
+          <p className="mt-2 max-w-md text-ink/60">
+            Integración de recaudos y transferencias.
+          </p>
+        </div>
+      </section>
       <div className="grid gap-4 sm:grid-cols-2">
         <Link
           href="/collections"
