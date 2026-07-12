@@ -70,6 +70,44 @@ npm start
 | `/api/transfers` | GET, POST | `GET/POST /api/v1/outgoing_transfers` |
 | `/api/transfers/[id]` | GET | `GET /api/v1/outgoing_transfers/{id}` |
 
+## Limitación conocida: el sandbox rechaza algunos endpoints con 403
+
+Durante la verificación en vivo, las credenciales de sandbox provistas para este reto
+devuelven `403 Forbidden` (`not_authorized`) en dos endpoints específicos:
+
+- `POST/GET /api/v1/collections`
+- `POST /api/v1/targets/resolve`
+
+**Esto no es un bug de esta implementación.** Se aisló la causa raíz en dos pasos
+independientes, saltándose por completo la aplicación:
+
+1. Se obtuvo un `access_token` fresco directamente contra
+   `POST https://breb-participant.sandbox.mono.la/api/v1/oauth/token` con las mismas
+   credenciales — la emisión del token funciona correctamente (`200 OK`).
+2. Con ese token recién emitido se llamó directamente (sin pasar por Next.js) a
+   `POST/GET https://breb-participant.sandbox.mono.la/api/v1/collections` y a
+   `POST .../api/v1/targets/resolve` — ambos devuelven el mismo
+   `{"code":"403 Forbidden","message":"Not authorized to have access to this resource",...,"error_code":"not_authorized"}`.
+
+Es decir: el token se emite, pero el tenant/cliente no tiene el scope o producto
+activado para esos dos recursos en el sandbox — un problema de configuración del lado
+de Mono, no de la integración.
+
+Lo que **sí se verificó funcionando end-to-end contra el sandbox real**:
+
+- El flujo OAuth `client_credentials` completo (emisión y uso del token).
+- `POST /api/v1/outgoing_transfers` y `GET /api/v1/outgoing_transfers/{id}` — ambos
+  endpoints responden correctamente (validaciones `422` con datos sintéticos, prueba de
+  que el enrutamiento, la autenticación y el manejo de errores funcionan de punta a
+  punta).
+- El manejo de errores de la app: todo error de Bre-B (401, 403, 422, etc.) se normaliza
+  y se muestra de forma clara en la UI, sin crashear, incluyendo estos mismos 403.
+
+El código de `create`/`get`/`list` de recaudos y de `resolveTarget` está completo,
+probado por tipos y cubierto por pruebas unitarias que mockean la capa HTTP — solo la
+verificación *en vivo* de esos dos endpoints específicos quedó bloqueada por el acceso
+del sandbox.
+
 ## Arquitectura
 
 - `src/lib/mono/` — cliente de la API de Bre-B, sin dependencias de React: manejo de auth
